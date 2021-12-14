@@ -1,0 +1,1 @@
+# com.makarov.checkbox.ua.api.java.library.test
