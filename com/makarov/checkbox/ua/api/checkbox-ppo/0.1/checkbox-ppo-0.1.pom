@@ -8,14 +8,6 @@
     <artifactId>checkbox-ppo</artifactId>
     <version>0.1</version>
 
-<!--    <properties>
-&lt;!&ndash;        <java.version>17</java.version>&ndash;&gt;
-        <maven.compiler.source>17.0.1</maven.compiler.source>
-        <maven.compiler.target>17.0.1</maven.compiler.target>
-        <github.global.server>github</github.global.server>
-        <github.maven-plugin>0.12</github.maven-plugin>
-    </properties>-->
-
     <properties>
     <java.version>1.7</java.version>
     <github.global.server>github</github.global.server>
