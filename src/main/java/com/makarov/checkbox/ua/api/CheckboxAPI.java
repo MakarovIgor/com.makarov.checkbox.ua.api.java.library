@@ -1,18 +1,18 @@
 package com.makarov.checkbox.ua.api;
 
-//import okhttp3.FormBody;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.makarov.checkbox.ua.api.Receipt.PngWidths;
+import com.makarov.checkbox.ua.api.Exceptions.InvalidCredentialsException;
+import com.makarov.checkbox.ua.api.Exceptions.NotActiveShiftException;
+import com.makarov.checkbox.ua.api.Exceptions.ValidationException;
+import com.makarov.checkbox.ua.api.Receipt.Widths;
 import com.makarov.checkbox.ua.api.Receipt.Receipt;
-import netscape.javascript.JSObject;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +35,6 @@ public class CheckboxAPI {
         integrationRequest.setHeaders(headers);
         integrationRequest.setMethod("POST");
 
-
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("login", config.get(Config.LOGIN));
         jsonObject.addProperty("password", config.get(Config.PASSWORD));
@@ -43,12 +42,11 @@ public class CheckboxAPI {
         RequestBody body = RequestBody.create(new Gson().toJson(jsonObject), MediaType.parse("application/json"));
         integrationRequest.setRequestBody(body);
 
-        String response = integrationRequest.send();
-        JsonObject convertedObject = new Gson().fromJson(response, JsonObject.class);
+        Response response = validateResponse(integrationRequest.request());
+
+        JsonObject convertedObject = new Gson().fromJson(response.body().string(), JsonObject.class);
 
         setToken(convertedObject.get("access_token").getAsString());
-
-        System.out.println("cashierSignIn " + response);
     }
 
     public void cashierCreateShift() throws Exception {
@@ -57,9 +55,7 @@ public class CheckboxAPI {
         integrationRequest.setHeaders(headers);
         integrationRequest.setMethod("POST");
 
-        String response = integrationRequest.send();
-
-        System.out.println("cashierCreateShift " + response);
+        Response response = validateResponse(integrationRequest.request());
     }
 
     public Receipt receiptsSell(Receipt receipt) throws Exception {
@@ -71,12 +67,11 @@ public class CheckboxAPI {
         String receiptBody = new Gson().toJson(receipt, Receipt.class);
 
         RequestBody body = RequestBody.create(receiptBody, MediaType.parse("application/json"));
-        System.out.println("receiptBody " + receiptBody);
         integrationRequest.setRequestBody(body);
 
-        String response = integrationRequest.send();
-        receipt = new Gson().fromJson(response, Receipt.class);
-        System.out.println("receiptsSell " + response);
+        Response response = validateResponse(integrationRequest.request());
+
+        receipt = new Gson().fromJson(response.body().string(), Receipt.class);
 
         return receipt;
     }
@@ -87,31 +82,35 @@ public class CheckboxAPI {
         integrationRequest.setHeaders(headers);
         integrationRequest.setMethod("GET");
 
-        String response = integrationRequest.send();
-        Receipt receipt = new Gson().fromJson(response, Receipt.class);
-        System.out.println("getReceipt " + response);
+        Response response = validateResponse(integrationRequest.request());
+
+        Receipt receipt = new Gson().fromJson(response.body().string(), Receipt.class);
 
         return receipt;
     }
 
-    public String getReceiptPng(String receiptUUID, PngWidths pngWidths) throws Exception {
-       /* headers.put("Content-Type", "image/png");
+    public String getReceiptPngLink(String receiptId, Widths widths) throws Exception {
+        String url = config.get(Config.API_URL) + "/api/v1/receipts/" + receiptId + "/png";
+        if (widths != null) {
+            url += "?" + widths.urlParameters();
+        }
+        return url;
+    }
+
+    public String getReceiptText(String receiptId, int width) throws Exception {
+        if (width < 10) {
+            width = 10;
+        }
 
         IntegrationRequest integrationRequest = new IntegrationRequest();
-        integrationRequest.setUrl(config.get(Config.API_URL) + "/api/v1/receipts/" + receiptUUID + "/png");
+        integrationRequest.setUrl(
+                config.get(Config.API_URL) + "/api/v1/receipt/" + receiptId + "/text?width=" + width
+        );
         integrationRequest.setHeaders(headers);
         integrationRequest.setMethod("GET");
 
-        String response = integrationRequest.send();
-       // Receipt receipt = new Gson().fromJson(response, Receipt.class);
-        System.out.println("getReceiptPng " + response);
-        headers.put("Content-Type", "application/json");*/
-       /* URL url = new URL(imageURL);
-        InputStream is = url.openStream();
-        byte[] bytes = is.readAllBytes();
-        return Base64.encodeBase64String(bytes);*/
-
-        return config.get(Config.API_URL) + "/api/v1/receipts/" + receiptUUID + "/png";
+        Response response = validateResponse(integrationRequest.request());
+        return response.body().string();
     }
 
     public void shiftsClose() throws Exception {
@@ -119,10 +118,27 @@ public class CheckboxAPI {
         integrationRequest.setUrl(config.get(Config.API_URL) + "/api/v1/shifts/close");
         integrationRequest.setHeaders(headers);
         integrationRequest.setMethod("POST");
-        String response = integrationRequest.send();
-        System.out.println("shiftsClose " + response);
+
+        Response response = validateResponse(integrationRequest.request());
+        System.out.println("shiftsClose " + response.body().string());
     }
 
+    protected Response validateResponse(Response response) throws Exception {
+        ResponseBody responseBody = response.peekBody(Long.MAX_VALUE);
+        JsonObject body = new Gson().fromJson(responseBody.string(), JsonObject.class);
+        String message = body.has("message") ? body.get("message").getAsString() : "";
+        switch (response.code()) {
+            case 400 -> throw new NotActiveShiftException(message);
+            case 403 -> throw new InvalidCredentialsException(message);
+            case 422 -> throw new ValidationException(message);
+        }
+
+        if (!message.isEmpty()) {
+            throw new Exception(message);
+        }
+
+        return response;
+    }
 
     private void setToken(String token) {
         headers.put("Authorization", "Bearer " + token);

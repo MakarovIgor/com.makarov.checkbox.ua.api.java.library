@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.net.ssl.*;
 import java.io.IOException;
-import java.security.cert.CertificateException;
 import java.util.Map;
 
 public class IntegrationRequest {
@@ -71,7 +70,7 @@ public class IntegrationRequest {
                 requestBuilder.header(entry.getKey(), entry.getValue());
             }
         }
-        //System.out.println(requestBuilder.getMethod$okhttp());
+
         return requestBuilder.url(url).build();
     }
 
@@ -95,35 +94,22 @@ public class IntegrationRequest {
         return client;
     }
 
-    public String send() throws Exception {
-        String content = "";
-
+    public Response request() throws Exception {
         okhttp3.Request request = this.buildRequest();
-
         OkHttpClient client = this.buildOkHttpClient();
-        Response response = client.newCall(request).execute();
-        content = response.body().string();
 
-/*        Log.e("request url", request.url().uri() + " " + TAG);
-        Log.e("response content", content + " " + TAG);
-        Log.e("response code", response.code() + " " + TAG);*/
-
-        //if (response.code() >= 500) {
-        // throw new Exception(new JSONObject(content).getString("message"));
-        //}
-
-        return content;
+        return client.newCall(request).execute();
     }
 
     private TrustManager[] getTrustAllCerts() {
         return new TrustManager[]{
                 new X509TrustManager() {
                     @Override
-                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
                     }
 
                     @Override
-                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
                     }
 
                     @Override

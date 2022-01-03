@@ -10,7 +10,6 @@ public class Good {
     boolean is_return = false;
     ArrayList<Discount> discounts = new ArrayList<>();
 
-
     public Good(String name, String code, int price, int quantity, ArrayList<Tax> taxes, boolean isReturn) {
         good.put("code", code);
         good.put("name", name);
@@ -32,6 +31,4 @@ public class Good {
         }
         return goodTaxes;
     }
-
-
 }
