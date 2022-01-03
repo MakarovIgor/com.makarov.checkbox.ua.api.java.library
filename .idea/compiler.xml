@@ -6,12 +6,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="com.makarov.checkbox.ua.api.java" />
         <module name="com.makarov.checkbox.ua.api.java.library" />
         <module name="checkbox-ppo" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="checkbox-ppo" target="1.7" />
+      <module name="checkbox-ppo" target="17" />
+      <module name="com.makarov.checkbox.ua.api.java" target="17" />
       <module name="com.makarov.checkbox.ua.api.java.library" target="17" />
     </bytecodeTargetLevel>
   </component>
