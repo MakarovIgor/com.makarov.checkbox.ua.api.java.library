@@ -1,10 +1,10 @@
 package com.makarov.checkbox.ua.api.Receipt;
 
-public class Widths {
+public class PngWidths {
     int width, paperWidth;
 
-    public Widths(int countCharsInLine, int paperWidth) {
-        this.width = countCharsInLine;
+    public PngWidths(int width, int paperWidth) {
+        this.width = width;
         this.paperWidth = paperWidth;
     }
 

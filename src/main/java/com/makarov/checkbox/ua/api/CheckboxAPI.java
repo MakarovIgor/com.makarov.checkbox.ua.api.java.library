@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.makarov.checkbox.ua.api.Exceptions.InvalidCredentialsException;
 import com.makarov.checkbox.ua.api.Exceptions.NotActiveShiftException;
 import com.makarov.checkbox.ua.api.Exceptions.ValidationException;
-import com.makarov.checkbox.ua.api.Receipt.Widths;
+import com.makarov.checkbox.ua.api.Receipt.PngWidths;
 import com.makarov.checkbox.ua.api.Receipt.Receipt;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -89,12 +89,29 @@ public class CheckboxAPI {
         return receipt;
     }
 
-    public String getReceiptPngLink(String receiptId, Widths widths) throws Exception {
-        String url = config.get(Config.API_URL) + "/api/v1/receipts/" + receiptId + "/png";
-        if (widths != null) {
-            url += "?" + widths.urlParameters();
-        }
-        return url;
+    public String getReceiptHtml(String receiptId, boolean isSimple) throws Exception {
+        IntegrationRequest integrationRequest = new IntegrationRequest();
+        integrationRequest.setUrl(
+                config.get(Config.API_URL) + "/api/v1/receipts/" + receiptId + "/html?simple=" + isSimple
+        );
+        integrationRequest.setHeaders(headers);
+        integrationRequest.setMethod("GET");
+
+        Response response = validateResponse(integrationRequest.request());
+        return response.body().string();
+    }
+
+    public byte[] getReceiptPdf(String receiptId) throws Exception {
+        IntegrationRequest integrationRequest = new IntegrationRequest();
+        integrationRequest.setUrl(
+                config.get(Config.API_URL) + "/api/v1/receipts/" + receiptId + "/pdf"
+        );
+        integrationRequest.setHeaders(headers);
+        integrationRequest.setMethod("GET");
+
+        Response response = validateResponse(integrationRequest.request());
+
+        return response.body().bytes();
     }
 
     public String getReceiptText(String receiptId, int width) throws Exception {
@@ -104,13 +121,43 @@ public class CheckboxAPI {
 
         IntegrationRequest integrationRequest = new IntegrationRequest();
         integrationRequest.setUrl(
-                config.get(Config.API_URL) + "/api/v1/receipt/" + receiptId + "/text?width=" + width
+                config.get(Config.API_URL) + "/api/v1/receipts/" + receiptId + "/text?width=" + width
         );
         integrationRequest.setHeaders(headers);
         integrationRequest.setMethod("GET");
 
         Response response = validateResponse(integrationRequest.request());
         return response.body().string();
+    }
+
+    public String getReceiptPngLink(String receiptId, PngWidths widths) throws Exception {
+        String url = config.get(Config.API_URL) + "/api/v1/receipts/" + receiptId + "/png";
+        if (widths != null) {
+            url += "?" + widths.urlParameters();
+        }
+        return url;
+    }
+
+    public byte[] getReceiptPng(String receiptId, PngWidths widths) throws Exception {
+        IntegrationRequest integrationRequest = new IntegrationRequest();
+        integrationRequest.setUrl(getReceiptPngLink(receiptId, widths));
+        integrationRequest.setHeaders(headers);
+        integrationRequest.setMethod("GET");
+
+        Response response = validateResponse(integrationRequest.request());
+        return response.body().bytes();
+    }
+
+    public byte[] getReceiptQrCode(String receiptId) throws Exception {
+        IntegrationRequest integrationRequest = new IntegrationRequest();
+        integrationRequest.setUrl(
+                config.get(Config.API_URL) + "/api/v1/receipts/" + receiptId + "/qrcode"
+        );
+        integrationRequest.setHeaders(headers);
+        integrationRequest.setMethod("GET");
+
+        Response response = validateResponse(integrationRequest.request());
+        return response.body().bytes();
     }
 
     public void shiftsClose() throws Exception {
@@ -120,23 +167,24 @@ public class CheckboxAPI {
         integrationRequest.setMethod("POST");
 
         Response response = validateResponse(integrationRequest.request());
-        System.out.println("shiftsClose " + response.body().string());
     }
 
     protected Response validateResponse(Response response) throws Exception {
-        ResponseBody responseBody = response.peekBody(Long.MAX_VALUE);
-        JsonObject body = new Gson().fromJson(responseBody.string(), JsonObject.class);
-        String message = body.has("message") ? body.get("message").getAsString() : "";
-        switch (response.code()) {
-            case 400 -> throw new NotActiveShiftException(message);
-            case 403 -> throw new InvalidCredentialsException(message);
-            case 422 -> throw new ValidationException(message);
-        }
+        if (!response.isSuccessful()) {
+            ResponseBody responseBody = response.peekBody(Long.MAX_VALUE);
+            JsonObject body = new Gson().fromJson(responseBody.string(), JsonObject.class);
+            String message = body.has("message") ? body.get("message").getAsString() : "";
 
-        if (!message.isEmpty()) {
-            throw new Exception(message);
-        }
+            switch (response.code()) {
+                case 400 -> throw new NotActiveShiftException(message);
+                case 403 -> throw new InvalidCredentialsException(message);
+                case 422 -> throw new ValidationException(message);
+            }
 
+            if (!message.isEmpty()) {
+                throw new Exception(message);
+            }
+        }
         return response;
     }
 
