@@ -1,15 +1,15 @@
-package com.makarov.checkbox.ua.api;
+package com.makarov.checkbox.ua.api.Requests;
 
+import com.makarov.checkbox.ua.api.Requests.Routes.Route;
 import okhttp3.*;
 import okio.BufferedSink;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.net.ssl.*;
-import java.io.IOException;
 import java.util.Map;
 
-public class IntegrationRequest {
+public class RequestSender {
     private String url;
     private RequestBody body = new RequestBody() {
         @Nullable
@@ -19,18 +19,19 @@ public class IntegrationRequest {
         }
 
         @Override
-        public void writeTo(@NotNull BufferedSink bufferedSink) throws IOException {
+        public void writeTo(@NotNull BufferedSink bufferedSink) {
 
         }
     };
-    private String method = "GET";
+    private Methods method = Methods.GET;
     private Map<String, String> headers;
 
-    public IntegrationRequest(String url) {
-        this.url = url;
+    public RequestSender(Route route) {
+        setUrl(route.url());
+        setMethod(route.method());
     }
 
-    public IntegrationRequest() {
+    public RequestSender() {
 
     }
 
@@ -38,7 +39,7 @@ public class IntegrationRequest {
         this.url = url;
     }
 
-    public void setMethod(String method) {
+    public void setMethod(Methods method) {
         this.method = method;
     }
 
@@ -50,19 +51,13 @@ public class IntegrationRequest {
         this.headers = headers;
     }
 
-    private Request buildRequest() throws Exception {
+    private Request buildRequest() {
         Request.Builder requestBuilder = new okhttp3.Request.Builder();
-        String lowerMethod = method.toLowerCase();
 
-        if (lowerMethod.equals("get")) {
+        if (method == Methods.GET) {
             requestBuilder.get();
-        } else if (lowerMethod.equals("post")) {
+        } else if (method == Methods.POST) {
             requestBuilder.post(body);
-        } else if (lowerMethod.equals("put")) {
-            if (body != null)
-                requestBuilder.put(body);
-            else
-                throw new Exception("RequestBody must be not empty in PUT query");
         }
 
         if (headers != null && !headers.isEmpty()) {

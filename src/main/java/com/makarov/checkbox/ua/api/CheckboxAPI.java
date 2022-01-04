@@ -3,25 +3,32 @@ package com.makarov.checkbox.ua.api;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.makarov.checkbox.ua.api.Exceptions.InvalidCredentialsException;
 import com.makarov.checkbox.ua.api.Exceptions.NotActiveShiftException;
 import com.makarov.checkbox.ua.api.Exceptions.ValidationException;
 import com.makarov.checkbox.ua.api.Receipt.PngWidths;
 import com.makarov.checkbox.ua.api.Receipt.Receipt;
+import com.makarov.checkbox.ua.api.Receipt.Tax;
+import com.makarov.checkbox.ua.api.Requests.RequestSender;
+import com.makarov.checkbox.ua.api.Requests.Routes.AllRoutes;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CheckboxAPI {
     Config config;
     Map<String, String> headers;
+    AllRoutes routes;
 
     public CheckboxAPI(Config config) throws Exception {
         this.config = config;
+        this.routes = new AllRoutes(config.get(Config.API_URL));
 
         headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
@@ -30,16 +37,13 @@ public class CheckboxAPI {
     }
 
     public void cashierSignIn() throws Exception {
-        IntegrationRequest integrationRequest = new IntegrationRequest();
-        integrationRequest.setUrl(config.get(Config.API_URL) + "/api/v1/cashier/signin");
-        integrationRequest.setHeaders(headers);
-        integrationRequest.setMethod("POST");
-
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("login", config.get(Config.LOGIN));
         jsonObject.addProperty("password", config.get(Config.PASSWORD));
-
         RequestBody body = RequestBody.create(new Gson().toJson(jsonObject), MediaType.parse("application/json"));
+
+        RequestSender integrationRequest = new RequestSender(routes.cashierSignIn());
+        integrationRequest.setHeaders(headers);
         integrationRequest.setRequestBody(body);
 
         Response response = validateResponse(integrationRequest.request());
@@ -49,68 +53,70 @@ public class CheckboxAPI {
         setToken(convertedObject.get("access_token").getAsString());
     }
 
-    public void cashierCreateShift() throws Exception {
-        IntegrationRequest integrationRequest = new IntegrationRequest();
-        integrationRequest.setUrl(config.get(Config.API_URL) + "/api/v1/shifts");
+    public void cashierSignOut() throws Exception {
+        RequestSender integrationRequest = new RequestSender(routes.cashierSignOut());
         integrationRequest.setHeaders(headers);
-        integrationRequest.setMethod("POST");
+
+        validateResponse(integrationRequest.request());
+    }
+
+    //TODO return Cashier
+    public void getCashierProfile() throws Exception {
+        RequestSender integrationRequest = new RequestSender(routes.cashierProfile());
+        integrationRequest.setHeaders(headers);
+
+        validateResponse(integrationRequest.request());
+    }
+
+    public void openShift() throws Exception {
+        RequestSender integrationRequest = new RequestSender(routes.openShift());
+        integrationRequest.setHeaders(headers);
+
+        Response response = validateResponse(integrationRequest.request());
+    }
+
+    public void closeShift() throws Exception {
+        RequestSender integrationRequest = new RequestSender(routes.closeShift());
+        integrationRequest.setHeaders(headers);
 
         Response response = validateResponse(integrationRequest.request());
     }
 
     public Receipt receiptsSell(Receipt receipt) throws Exception {
-        IntegrationRequest integrationRequest = new IntegrationRequest();
-        integrationRequest.setUrl(config.get(Config.API_URL) + "/api/v1/receipts/sell");
-        integrationRequest.setHeaders(headers);
-        integrationRequest.setMethod("POST");
-
         String receiptBody = new Gson().toJson(receipt, Receipt.class);
-
         RequestBody body = RequestBody.create(receiptBody, MediaType.parse("application/json"));
+
+        RequestSender integrationRequest = new RequestSender(routes.sellReceipt());
+        integrationRequest.setHeaders(headers);
         integrationRequest.setRequestBody(body);
 
         Response response = validateResponse(integrationRequest.request());
 
-        receipt = new Gson().fromJson(response.body().string(), Receipt.class);
-
-        return receipt;
+        return new Gson().fromJson(response.body().string(), Receipt.class);
     }
 
-    public Receipt getReceipt(String receiptUUID) throws Exception {
-        IntegrationRequest integrationRequest = new IntegrationRequest();
-        integrationRequest.setUrl(config.get(Config.API_URL) + "/api/v1/receipts/" + receiptUUID);
+    public Receipt getReceipt(String receiptId) throws Exception {
+        RequestSender integrationRequest = new RequestSender(routes.getReceipt(receiptId));
         integrationRequest.setHeaders(headers);
-        integrationRequest.setMethod("GET");
 
         Response response = validateResponse(integrationRequest.request());
 
-        Receipt receipt = new Gson().fromJson(response.body().string(), Receipt.class);
-
-        return receipt;
+        return new Gson().fromJson(response.body().string(), Receipt.class);
     }
 
     public String getReceiptHtml(String receiptId, boolean isSimple) throws Exception {
-        IntegrationRequest integrationRequest = new IntegrationRequest();
-        integrationRequest.setUrl(
-                config.get(Config.API_URL) + "/api/v1/receipts/" + receiptId + "/html?simple=" + isSimple
-        );
+        RequestSender integrationRequest = new RequestSender(routes.getReceiptHtml(receiptId, isSimple));
         integrationRequest.setHeaders(headers);
-        integrationRequest.setMethod("GET");
 
         Response response = validateResponse(integrationRequest.request());
         return response.body().string();
     }
 
     public byte[] getReceiptPdf(String receiptId) throws Exception {
-        IntegrationRequest integrationRequest = new IntegrationRequest();
-        integrationRequest.setUrl(
-                config.get(Config.API_URL) + "/api/v1/receipts/" + receiptId + "/pdf"
-        );
+        RequestSender integrationRequest = new RequestSender(routes.getReceiptPdf(receiptId));
         integrationRequest.setHeaders(headers);
-        integrationRequest.setMethod("GET");
 
         Response response = validateResponse(integrationRequest.request());
-
         return response.body().bytes();
     }
 
@@ -119,54 +125,44 @@ public class CheckboxAPI {
             width = 10;
         }
 
-        IntegrationRequest integrationRequest = new IntegrationRequest();
-        integrationRequest.setUrl(
-                config.get(Config.API_URL) + "/api/v1/receipts/" + receiptId + "/text?width=" + width
-        );
+        RequestSender integrationRequest = new RequestSender(routes.getReceiptText(receiptId, width));
         integrationRequest.setHeaders(headers);
-        integrationRequest.setMethod("GET");
 
         Response response = validateResponse(integrationRequest.request());
         return response.body().string();
     }
 
-    public String getReceiptPngLink(String receiptId, PngWidths widths) throws Exception {
-        String url = config.get(Config.API_URL) + "/api/v1/receipts/" + receiptId + "/png";
-        if (widths != null) {
-            url += "?" + widths.urlParameters();
-        }
-        return url;
-    }
-
     public byte[] getReceiptPng(String receiptId, PngWidths widths) throws Exception {
-        IntegrationRequest integrationRequest = new IntegrationRequest();
-        integrationRequest.setUrl(getReceiptPngLink(receiptId, widths));
+        RequestSender integrationRequest = new RequestSender(routes.getReceiptPng(receiptId, widths));
         integrationRequest.setHeaders(headers);
-        integrationRequest.setMethod("GET");
 
         Response response = validateResponse(integrationRequest.request());
         return response.body().bytes();
     }
 
     public byte[] getReceiptQrCode(String receiptId) throws Exception {
-        IntegrationRequest integrationRequest = new IntegrationRequest();
-        integrationRequest.setUrl(
-                config.get(Config.API_URL) + "/api/v1/receipts/" + receiptId + "/qrcode"
-        );
+        RequestSender integrationRequest = new RequestSender(routes.getReceiptQrCode(receiptId));
         integrationRequest.setHeaders(headers);
-        integrationRequest.setMethod("GET");
 
         Response response = validateResponse(integrationRequest.request());
         return response.body().bytes();
     }
 
-    public void shiftsClose() throws Exception {
-        IntegrationRequest integrationRequest = new IntegrationRequest();
-        integrationRequest.setUrl(config.get(Config.API_URL) + "/api/v1/shifts/close");
+    public ArrayList<Tax> getAllTaxes() throws Exception {
+        RequestSender integrationRequest = new RequestSender(routes.getAllTaxes());
         integrationRequest.setHeaders(headers);
-        integrationRequest.setMethod("POST");
 
         Response response = validateResponse(integrationRequest.request());
+
+        return new Gson().fromJson(response.body().string(), new TypeToken<ArrayList<Tax>>(){}.getType());
+    }
+
+    public String pingTaxService() throws Exception {
+        RequestSender integrationRequest = new RequestSender(routes.pingTaxService());
+        integrationRequest.setHeaders(headers);
+
+        Response response = validateResponse(integrationRequest.request());
+        return response.body().string();
     }
 
     protected Response validateResponse(Response response) throws Exception {
