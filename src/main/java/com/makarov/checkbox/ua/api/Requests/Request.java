@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.net.ssl.*;
 import java.util.Map;
 
-public class RequestSender {
+public class Request {
     private String url;
     private RequestBody body = new RequestBody() {
         @Nullable
@@ -26,12 +26,12 @@ public class RequestSender {
     private Methods method = Methods.GET;
     private Map<String, String> headers;
 
-    public RequestSender(Route route) {
+    public Request(Route route) {
         setUrl(route.url());
         setMethod(route.method());
     }
 
-    public RequestSender() {
+    public Request() {
 
     }
 
@@ -51,8 +51,8 @@ public class RequestSender {
         this.headers = headers;
     }
 
-    private Request buildRequest() {
-        Request.Builder requestBuilder = new okhttp3.Request.Builder();
+    private okhttp3.Request buildRequest() {
+        okhttp3.Request.Builder requestBuilder = new okhttp3.Request.Builder();
 
         if (method == Methods.GET) {
             requestBuilder.get();
@@ -89,7 +89,7 @@ public class RequestSender {
         return client;
     }
 
-    public Response request() throws Exception {
+    public Response send() throws Exception {
         okhttp3.Request request = this.buildRequest();
         OkHttpClient client = this.buildOkHttpClient();
 
