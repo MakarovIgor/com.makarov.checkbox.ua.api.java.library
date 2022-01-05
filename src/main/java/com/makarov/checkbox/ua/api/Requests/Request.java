@@ -44,6 +44,8 @@ public class Request {
     }
 
     public void setRequestBody(RequestBody body) {
+        if (body == null)
+            return;
         this.body = body;
     }
 

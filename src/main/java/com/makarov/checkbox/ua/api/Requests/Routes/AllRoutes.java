@@ -1,6 +1,6 @@
 package com.makarov.checkbox.ua.api.Requests.Routes;
 
-import com.makarov.checkbox.ua.api.Receipt.PngWidths;
+import com.makarov.checkbox.ua.api.Models.PngWidths;
 
 public class AllRoutes {
     String apiUrl;
@@ -58,11 +58,16 @@ public class AllRoutes {
         return new Receipt(apiUrl).getReceiptPng(receiptId, widths);
     }
 
+    public Route sendReceiptToEmail(String receiptId) {
+        return new Receipt(apiUrl).sendReceiptToEmail(receiptId);
+    }
+
+    public Route createServiceReceipt() {
+        return new Receipt(apiUrl).service();
+    }
     public Route getAllTaxes() {
         return new Route(apiUrl + "tax");
     }
-
-
 
     public Route pingTaxService() {
         return new CashRegisters(apiUrl).pingTaxService();

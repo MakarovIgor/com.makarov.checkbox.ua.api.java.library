@@ -2,16 +2,20 @@ package com.makarov.checkbox.ua.api;
 
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.makarov.checkbox.ua.api.Exceptions.InvalidCredentialsException;
 import com.makarov.checkbox.ua.api.Exceptions.NotActiveShiftException;
 import com.makarov.checkbox.ua.api.Exceptions.ValidationException;
-import com.makarov.checkbox.ua.api.Receipt.PngWidths;
-import com.makarov.checkbox.ua.api.Receipt.Receipt;
-import com.makarov.checkbox.ua.api.Receipt.Tax;
+import com.makarov.checkbox.ua.api.Models.Cashier;
+import com.makarov.checkbox.ua.api.Models.PngWidths;
+import com.makarov.checkbox.ua.api.Models.Receipt.Receipt;
+import com.makarov.checkbox.ua.api.Models.Receipt.Tax;
+import com.makarov.checkbox.ua.api.Models.Receipt.ServiceReceipt;
 import com.makarov.checkbox.ua.api.Requests.Request;
 import com.makarov.checkbox.ua.api.Requests.Routes.AllRoutes;
+import com.makarov.checkbox.ua.api.Requests.Routes.Route;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -42,81 +46,67 @@ public class CheckboxAPI {
         jsonObject.addProperty("password", config.get(Config.PASSWORD));
         RequestBody body = RequestBody.create(new Gson().toJson(jsonObject), MediaType.parse("application/json"));
 
-        Request request = new Request(routes.cashierSignIn());
-        request.setHeaders(headers);
-        request.setRequestBody(body);
+        Response response = validateResponse(sendRequest(routes.cashierSignIn(), body));
 
-        Response response = validateResponse(request.send());
+        JsonObject tokenData = new Gson().fromJson(response.body().string(), JsonObject.class);
 
-        JsonObject convertedObject = new Gson().fromJson(response.body().string(), JsonObject.class);
-
-        setToken(convertedObject.get("access_token").getAsString());
+        setToken(tokenData.get("access_token").getAsString());
     }
 
     public void cashierSignOut() throws Exception {
-        Request request = new Request(routes.cashierSignOut());
-        request.setHeaders(headers);
-
-        validateResponse(request.send());
+        validateResponse(sendRequest(routes.cashierSignOut(), null));
     }
 
-    //TODO return Cashier
-    public void getCashierProfile() throws Exception {
-        Request request = new Request(routes.cashierProfile());
-        request.setHeaders(headers);
-
-        validateResponse(request.send());
+    public Cashier getCashierProfile() throws Exception {
+        Response response = validateResponse(sendRequest(routes.cashierProfile(), null));
+        return new Gson().fromJson(response.body().string(), Cashier.class);
     }
 
     public void openShift() throws Exception {
-        Request request = new Request(routes.openShift());
-        request.setHeaders(headers);
-
-        Response response = validateResponse(request.send());
+        Response response = validateResponse(sendRequest(routes.openShift(), null));
     }
 
     public void closeShift() throws Exception {
-        Request request = new Request(routes.closeShift());
-        request.setHeaders(headers);
-
-        Response response = validateResponse(request.send());
+        Response response = validateResponse(sendRequest(routes.closeShift(), null));
     }
 
-    public Receipt receiptsSell(Receipt receipt) throws Exception {
+    public String createServiceReceipt(ServiceReceipt serviceReceipt) throws Exception {
+        String receiptBody = new Gson().toJson(serviceReceipt, ServiceReceipt.class);
+        RequestBody body = RequestBody.create(receiptBody, MediaType.parse("application/json"));
+
+        Response response = validateResponse(sendRequest(routes.createServiceReceipt(), body));
+
+        return response.body().string();
+        //return new Gson().fromJson(response.body().string(), ServiceReceipt.class);
+    }
+
+    public Receipt receiptSell(Receipt receipt) throws Exception {
         String receiptBody = new Gson().toJson(receipt, Receipt.class);
         RequestBody body = RequestBody.create(receiptBody, MediaType.parse("application/json"));
 
-        Request request = new Request(routes.sellReceipt());
-        request.setHeaders(headers);
-        request.setRequestBody(body);
-
-        Response response = validateResponse(request.send());
+        Response response = validateResponse(sendRequest(routes.sellReceipt(), body));
 
         return new Gson().fromJson(response.body().string(), Receipt.class);
     }
 
+    public void sendReceiptToEmail(String receiptId, ArrayList<String> emails) throws Exception {
+        String emailsJson = new Gson().toJson(emails);
+        RequestBody body = RequestBody.create(emailsJson, MediaType.parse("application/json"));
+        validateResponse(sendRequest(routes.sendReceiptToEmail(receiptId), body));
+    }
+
     public Receipt getReceipt(String receiptId) throws Exception {
-        Request request = new Request(routes.getReceipt(receiptId));
-        request.setHeaders(headers);
-
-        Response response = validateResponse(request.send());
-
+        Response response = validateResponse(sendRequest(routes.getReceipt(receiptId), null));
         return new Gson().fromJson(response.body().string(), Receipt.class);
     }
 
     public String getReceiptHtml(String receiptId, boolean isSimple) throws Exception {
-        Request request = new Request(routes.getReceiptHtml(receiptId, isSimple));
-        request.setHeaders(headers);
-
-        Response response = validateResponse(request.send());
+        Response response = validateResponse(sendRequest(routes.getReceiptHtml(receiptId, isSimple), null));
         return response.body().string();
     }
 
     public byte[] getReceiptPdf(String receiptId) throws Exception {
-        Request request = new Request(routes.getReceiptPdf(receiptId));
-        request.setHeaders(headers);
-
-        Response response = validateResponse(request.send());
+        Response response = validateResponse(sendRequest(routes.getReceiptPdf(receiptId), null));
         return response.body().bytes();
     }
 
@@ -125,43 +115,27 @@ public class CheckboxAPI {
             width = 10;
         }
 
-        Request request = new Request(routes.getReceiptText(receiptId, width));
-        request.setHeaders(headers);
-
-        Response response = validateResponse(request.send());
+        Response response = validateResponse(sendRequest(routes.getReceiptText(receiptId, width), null));
         return response.body().string();
     }
 
     public byte[] getReceiptPng(String receiptId, PngWidths widths) throws Exception {
-        Request request = new Request(routes.getReceiptPng(receiptId, widths));
-        request.setHeaders(headers);
-
-        Response response = validateResponse(request.send());
+        Response response = validateResponse(sendRequest(routes.getReceiptPng(receiptId, widths), null));
         return response.body().bytes();
     }
 
     public byte[] getReceiptQrCode(String receiptId) throws Exception {
-        Request request = new Request(routes.getReceiptQrCode(receiptId));
-        request.setHeaders(headers);
-
-        Response response = validateResponse(request.send());
+        Response response = validateResponse(sendRequest(routes.getReceiptQrCode(receiptId), null));
         return response.body().bytes();
     }
 
     public ArrayList<Tax> getAllTaxes() throws Exception {
-        Request request = new Request(routes.getAllTaxes());
-        request.setHeaders(headers);
-
-        Response response = validateResponse(request.send());
-
+        Response response = validateResponse(sendRequest(routes.getAllTaxes(), null));
         return new Gson().fromJson(response.body().string(), new TypeToken<ArrayList<Tax>>(){}.getType());
     }
 
     public String pingTaxService() throws Exception {
-        Request request = new Request(routes.pingTaxService());
-        request.setHeaders(headers);
-
-        Response response = validateResponse(request.send());
+        Response response = validateResponse(sendRequest(routes.pingTaxService(), null));
         return response.body().string();
     }
 
@@ -169,12 +143,16 @@ public class CheckboxAPI {
         if (!response.isSuccessful()) {
             ResponseBody responseBody = response.peekBody(Long.MAX_VALUE);
             JsonObject body = new Gson().fromJson(responseBody.string(), JsonObject.class);
-            String message = body.has("message") ? body.get("message").getAsString() : "";
+            String message = body.get("message").getAsString();
 
             switch (response.code()) {
                 case 400 -> throw new NotActiveShiftException(message);
                 case 403 -> throw new InvalidCredentialsException(message);
-                case 422 -> throw new ValidationException(message);
+                case 422 -> {
+                    JsonArray detail = body.get("detail").getAsJsonArray();
+                    message += ": " + detail.get(0).getAsJsonObject().get("msg").getAsString();
+                    throw new ValidationException(message);
+                }
             }
 
             if (!message.isEmpty()) {
@@ -184,7 +162,14 @@ public class CheckboxAPI {
         return response;
     }
 
-    private void setToken(String token) {
+    protected void setToken(String token) {
         headers.put("Authorization", "Bearer " + token);
+    }
+
+    protected Response sendRequest(Route route, RequestBody body) throws Exception {
+        Request request = new Request(route);
+        request.setHeaders(headers);
+        request.setRequestBody(body);
+        return  request.send();
     }
 }

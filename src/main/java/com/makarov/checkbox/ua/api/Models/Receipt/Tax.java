@@ -1,4 +1,4 @@
-package com.makarov.checkbox.ua.api.Receipt;
+package com.makarov.checkbox.ua.api.Models.Receipt;
 
 public class Tax {
     int code;
