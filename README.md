@@ -24,4 +24,24 @@
   <version>0.1</version>
 </dependency>
 ```
+
+### Робота з API
+
+#### Налаштування:
+Для початку роботи, треба налаштувати та передати конфіг:
+> адреса продакшн сервера http://api.checkbox.in.ua
+> тестового сервера http://dev-api.checkbox.in.ua
+
+```java
+Config config = new Config([
+    Config.API_URL => 'https://dev-api.checkbox.in.ua/api/v1',
+    Config.LOGIN => 'логин кассира',
+    Config.PASSWORD => 'пароль кассира',
+    Config.LICENSE_KEY => 'ключ лицензии кассы'
+]);
+```
+
+#### Логин кассира:
+
+
  
