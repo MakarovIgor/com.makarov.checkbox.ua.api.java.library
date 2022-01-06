@@ -35,9 +35,9 @@
 ```java
 Config config = new Config([
     Config.API_URL => 'https://dev-api.checkbox.in.ua/api/v1',
-    Config.LOGIN => 'логин кассира',
-    Config.PASSWORD => 'пароль кассира',
-    Config.LICENSE_KEY => 'ключ лицензии кассы'
+    Config.LOGIN => 'логін касира',
+    Config.PASSWORD => 'пароль касира',
+    Config.LICENSE_KEY => 'ключ ліцензії касси'
 ]);
 ```
 
