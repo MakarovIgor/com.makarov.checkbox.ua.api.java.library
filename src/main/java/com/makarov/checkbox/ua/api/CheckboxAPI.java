@@ -149,9 +149,9 @@ public class CheckboxAPI {
         return responseJsonToClass(response, Report.class);
     }
 
-    public Report getReportText(String reportId) throws Exception {
+    public String getReportText(String reportId) throws Exception {
         Response response = validateResponse(sendRequest(routes.getReportText(reportId)));
-        return responseJsonToClass(response, Report.class);
+        return response.body().string();
     }
     public String getReportText(String reportId, int width) throws Exception {
         Response response = validateResponse(sendRequest(routes.getReportText(reportId, width)));
