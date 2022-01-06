@@ -1,5 +1,6 @@
 package com.makarov.checkbox.ua.api.Models.Receipt;
 
+import com.makarov.checkbox.ua.api.Models.Discount.Discount;
 import com.makarov.checkbox.ua.api.Models.Tax.Tax;
 
 import java.util.ArrayList;

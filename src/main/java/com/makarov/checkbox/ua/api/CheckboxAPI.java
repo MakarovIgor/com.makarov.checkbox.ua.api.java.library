@@ -2,12 +2,8 @@ package com.makarov.checkbox.ua.api;
 
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.makarov.checkbox.ua.api.Exceptions.InvalidCredentialsException;
-import com.makarov.checkbox.ua.api.Exceptions.NotActiveShiftException;
-import com.makarov.checkbox.ua.api.Exceptions.ValidationException;
 import com.makarov.checkbox.ua.api.Models.Cashier;
 import com.makarov.checkbox.ua.api.Models.PngWidths;
 import com.makarov.checkbox.ua.api.Models.Receipt.SellReceipt;
@@ -16,12 +12,12 @@ import com.makarov.checkbox.ua.api.Models.Receipt.ServiceReceipt;
 import com.makarov.checkbox.ua.api.Models.Report;
 import com.makarov.checkbox.ua.api.Models.Shift;
 import com.makarov.checkbox.ua.api.Requests.Request;
+import com.makarov.checkbox.ua.api.Requests.ResponseValidator;
 import com.makarov.checkbox.ua.api.Requests.Routes.AllRoutes;
 import com.makarov.checkbox.ua.api.Requests.Routes.Route;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,6 +71,20 @@ public class CheckboxAPI {
 
     public void closeShift() throws Exception {
         validateResponse(sendRequest(routes.closeShift()));
+    }
+
+    public Shift getShift(String shiftId) throws Exception {
+        Response response = validateResponse(sendRequest(routes.getShift(shiftId)));
+        return responseJsonToClass(response, Shift.class);
+    }
+
+    public ArrayList<Shift> getShifts() throws Exception {
+        Response response = validateResponse(sendRequest(routes.getShifts()));
+        String responseBody = response.body().string();
+        String results = new Gson().fromJson(responseBody, JsonObject.class).get("results").toString();
+
+        return new Gson().fromJson(results, new TypeToken<ArrayList<Shift>>() {
+        }.getType());
     }
 
     public ServiceReceipt createServiceReceipt(ServiceReceipt serviceReceipt) throws Exception {
@@ -131,7 +141,8 @@ public class CheckboxAPI {
 
     public ArrayList<Tax> getAllTaxes() throws Exception {
         Response response = validateResponse(sendRequest(routes.getAllTaxes()));
-        return new Gson().fromJson(response.body().string(), new TypeToken<ArrayList<Tax>>() {}.getType());
+        return new Gson().fromJson(response.body().string(), new TypeToken<ArrayList<Tax>>() {
+        }.getType());
     }
 
     public String pingTaxService() throws Exception {
@@ -153,31 +164,14 @@ public class CheckboxAPI {
         Response response = validateResponse(sendRequest(routes.getReportText(reportId)));
         return response.body().string();
     }
+
     public String getReportText(String reportId, int width) throws Exception {
         Response response = validateResponse(sendRequest(routes.getReportText(reportId, width)));
         return response.body().string();
     }
 
     protected Response validateResponse(Response response) throws Exception {
-        if (!response.isSuccessful()) {
-            ResponseBody responseBody = response.peekBody(Long.MAX_VALUE);
-            JsonObject body = new Gson().fromJson(responseBody.string(), JsonObject.class);
-            String message = body.get("message").getAsString();
-
-            switch (response.code()) {
-                case 400 -> throw new NotActiveShiftException(message);
-                case 403 -> throw new InvalidCredentialsException(message);
-                case 422 -> {
-                    JsonArray detail = body.get("detail").getAsJsonArray();
-                    message += ": " + detail.get(0).getAsJsonObject().get("msg").getAsString();
-                    throw new ValidationException(message);
-                }
-            }
-
-            if (!message.isEmpty()) {
-                throw new Exception(message);
-            }
-        }
+        ResponseValidator.validate(response);
         return response;
     }
 
@@ -197,6 +191,6 @@ public class CheckboxAPI {
     }
 
     protected <T> T responseJsonToClass(Response response, Class<T> toObject) throws Exception {
-        return (new Gson().fromJson(response.body().string(),toObject));
+        return (new Gson().fromJson(response.body().string(), toObject));
     }
 }

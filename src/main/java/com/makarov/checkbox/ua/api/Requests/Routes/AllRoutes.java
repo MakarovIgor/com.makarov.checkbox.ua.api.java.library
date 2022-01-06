@@ -92,4 +92,11 @@ public class AllRoutes {
     public Route getReportText(String reportId, int width) {
         return new ReportRoutes(apiUrl).getReportText(reportId, width);
     }
+    public Route getShift(String shiftId) {
+        return new ShiftRoutes(apiUrl).getShift(shiftId);
+    }
+
+    public Route getShifts() {
+        return new ShiftRoutes(apiUrl).getShifts();
+    }
 }

@@ -9,7 +9,7 @@ public class ShiftRoutes {
 
     public ShiftRoutes(String apiUrlWithVersion) {
         this.apiUrl = apiUrlWithVersion;
-        fullRoute = this.apiUrl + route;
+        fullRoute = this.apiUrl + route + "/";
     }
 
     public Route open() {
@@ -17,6 +17,14 @@ public class ShiftRoutes {
     }
 
     public Route close() {
-        return new Route(fullRoute + "/close", Methods.POST);
+        return new Route(fullRoute + "close", Methods.POST);
+    }
+
+    public Route getShift(String shiftId) {
+        return new Route(fullRoute + shiftId);
+    }
+
+    public Route getShifts() {
+        return new Route(fullRoute);
     }
 }

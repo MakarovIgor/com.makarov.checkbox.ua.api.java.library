@@ -9,7 +9,7 @@ public class Config {
     public static final String PASSWORD = "password";
     public static final String LICENSE_KEY = "licenseKey";
 
-    private Map<String, String> configData = new LinkedHashMap<>();
+    private final Map<String, String> configData = new LinkedHashMap<>();
 
     public Config(String apiUrl, String login, String password, String licenseKey) {
         configData.put(API_URL, apiUrl);

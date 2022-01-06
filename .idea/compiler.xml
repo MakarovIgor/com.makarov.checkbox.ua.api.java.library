@@ -8,7 +8,6 @@
         <outputRelativeToContentRoot value="true" />
         <module name="com.makarov.checkbox.ua.api.java" />
         <module name="com.makarov.checkbox.ua.api.java.library" />
-        <module name="checkbox-ppo" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
