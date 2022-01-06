@@ -1,5 +1,7 @@
 package com.makarov.checkbox.ua.api.Models.Receipt;
 
+import com.makarov.checkbox.ua.api.Models.Tax.Tax;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,7 +29,7 @@ public class Good {
     private ArrayList<Integer> prepareTaxes(ArrayList<Tax> taxes) {
         ArrayList<Integer> goodTaxes = new ArrayList<>();
         for (Tax tax : taxes) {
-            goodTaxes.add(tax.code);
+            goodTaxes.add(tax.code());
         }
         return goodTaxes;
     }

@@ -2,12 +2,12 @@ package com.makarov.checkbox.ua.api.Requests.Routes;
 
 import com.makarov.checkbox.ua.api.Requests.Methods;
 
-public class CashRegisters {
+public class CashRegistersRoutes {
     String route = "cash-registers";
     String apiUrl;
     String fullRoute;
 
-    public CashRegisters(String apiUrlWithVersion) {
+    public CashRegistersRoutes(String apiUrlWithVersion) {
         this.apiUrl = apiUrlWithVersion;
         fullRoute = this.apiUrl + route;
     }

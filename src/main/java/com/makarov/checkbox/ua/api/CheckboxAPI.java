@@ -10,9 +10,11 @@ import com.makarov.checkbox.ua.api.Exceptions.NotActiveShiftException;
 import com.makarov.checkbox.ua.api.Exceptions.ValidationException;
 import com.makarov.checkbox.ua.api.Models.Cashier;
 import com.makarov.checkbox.ua.api.Models.PngWidths;
-import com.makarov.checkbox.ua.api.Models.Receipt.Receipt;
-import com.makarov.checkbox.ua.api.Models.Receipt.Tax;
+import com.makarov.checkbox.ua.api.Models.Receipt.SellReceipt;
+import com.makarov.checkbox.ua.api.Models.Tax.Tax;
 import com.makarov.checkbox.ua.api.Models.Receipt.ServiceReceipt;
+import com.makarov.checkbox.ua.api.Models.Report;
+import com.makarov.checkbox.ua.api.Models.Shift;
 import com.makarov.checkbox.ua.api.Requests.Request;
 import com.makarov.checkbox.ua.api.Requests.Routes.AllRoutes;
 import com.makarov.checkbox.ua.api.Requests.Routes.Route;
@@ -48,45 +50,47 @@ public class CheckboxAPI {
 
         Response response = validateResponse(sendRequest(routes.cashierSignIn(), body));
 
-        JsonObject tokenData = new Gson().fromJson(response.body().string(), JsonObject.class);
+        JsonObject tokenData = responseJsonToClass(response, JsonObject.class);
 
         setToken(tokenData.get("access_token").getAsString());
     }
 
     public void cashierSignOut() throws Exception {
-        validateResponse(sendRequest(routes.cashierSignOut(), null));
+        validateResponse(sendRequest(routes.cashierSignOut()));
     }
 
     public Cashier getCashierProfile() throws Exception {
-        Response response = validateResponse(sendRequest(routes.cashierProfile(), null));
-        return new Gson().fromJson(response.body().string(), Cashier.class);
+        Response response = validateResponse(sendRequest(routes.cashierProfile()));
+        return responseJsonToClass(response, Cashier.class);
+    }
+
+    public Shift getCashierActiveShift() throws Exception {
+        Response response = validateResponse(sendRequest(routes.getCashierActiveShift()));
+        return responseJsonToClass(response, Shift.class);
     }
 
     public void openShift() throws Exception {
-        Response response = validateResponse(sendRequest(routes.openShift(), null));
+        validateResponse(sendRequest(routes.openShift()));
     }
 
     public void closeShift() throws Exception {
-        Response response = validateResponse(sendRequest(routes.closeShift(), null));
+        validateResponse(sendRequest(routes.closeShift()));
     }
 
-    public String createServiceReceipt(ServiceReceipt serviceReceipt) throws Exception {
+    public ServiceReceipt createServiceReceipt(ServiceReceipt serviceReceipt) throws Exception {
         String receiptBody = new Gson().toJson(serviceReceipt, ServiceReceipt.class);
         RequestBody body = RequestBody.create(receiptBody, MediaType.parse("application/json"));
 
         Response response = validateResponse(sendRequest(routes.createServiceReceipt(), body));
-
-        return response.body().string();
-        //return new Gson().fromJson(response.body().string(), ServiceReceipt.class);
+        return responseJsonToClass(response, ServiceReceipt.class);
     }
 
-    public Receipt receiptSell(Receipt receipt) throws Exception {
-        String receiptBody = new Gson().toJson(receipt, Receipt.class);
+    public SellReceipt receiptSell(SellReceipt receipt) throws Exception {
+        String receiptBody = new Gson().toJson(receipt, SellReceipt.class);
         RequestBody body = RequestBody.create(receiptBody, MediaType.parse("application/json"));
 
         Response response = validateResponse(sendRequest(routes.sellReceipt(), body));
-
-        return new Gson().fromJson(response.body().string(), Receipt.class);
+        return responseJsonToClass(response, SellReceipt.class);
     }
 
     public void sendReceiptToEmail(String receiptId, ArrayList<String> emails) throws Exception {
@@ -95,47 +99,62 @@ public class CheckboxAPI {
         validateResponse(sendRequest(routes.sendReceiptToEmail(receiptId), body));
     }
 
-    public Receipt getReceipt(String receiptId) throws Exception {
-        Response response = validateResponse(sendRequest(routes.getReceipt(receiptId), null));
-        return new Gson().fromJson(response.body().string(), Receipt.class);
+    public SellReceipt getReceipt(String receiptId) throws Exception {
+        Response response = validateResponse(sendRequest(routes.getReceipt(receiptId)));
+        return responseJsonToClass(response, SellReceipt.class);
     }
 
     public String getReceiptHtml(String receiptId, boolean isSimple) throws Exception {
-        Response response = validateResponse(sendRequest(routes.getReceiptHtml(receiptId, isSimple), null));
+        Response response = validateResponse(sendRequest(routes.getReceiptHtml(receiptId, isSimple)));
         return response.body().string();
     }
 
     public byte[] getReceiptPdf(String receiptId) throws Exception {
-        Response response = validateResponse(sendRequest(routes.getReceiptPdf(receiptId), null));
+        Response response = validateResponse(sendRequest(routes.getReceiptPdf(receiptId)));
         return response.body().bytes();
     }
 
     public String getReceiptText(String receiptId, int width) throws Exception {
-        if (width < 10) {
-            width = 10;
-        }
-
-        Response response = validateResponse(sendRequest(routes.getReceiptText(receiptId, width), null));
+        Response response = validateResponse(sendRequest(routes.getReceiptText(receiptId, width)));
         return response.body().string();
     }
 
     public byte[] getReceiptPng(String receiptId, PngWidths widths) throws Exception {
-        Response response = validateResponse(sendRequest(routes.getReceiptPng(receiptId, widths), null));
+        Response response = validateResponse(sendRequest(routes.getReceiptPng(receiptId, widths)));
         return response.body().bytes();
     }
 
     public byte[] getReceiptQrCode(String receiptId) throws Exception {
-        Response response = validateResponse(sendRequest(routes.getReceiptQrCode(receiptId), null));
+        Response response = validateResponse(sendRequest(routes.getReceiptQrCode(receiptId)));
         return response.body().bytes();
     }
 
     public ArrayList<Tax> getAllTaxes() throws Exception {
-        Response response = validateResponse(sendRequest(routes.getAllTaxes(), null));
-        return new Gson().fromJson(response.body().string(), new TypeToken<ArrayList<Tax>>(){}.getType());
+        Response response = validateResponse(sendRequest(routes.getAllTaxes()));
+        return new Gson().fromJson(response.body().string(), new TypeToken<ArrayList<Tax>>() {}.getType());
     }
 
     public String pingTaxService() throws Exception {
-        Response response = validateResponse(sendRequest(routes.pingTaxService(), null));
+        Response response = validateResponse(sendRequest(routes.pingTaxService()));
+        return response.body().string();
+    }
+
+    public Report createXReport() throws Exception {
+        Response response = validateResponse(sendRequest(routes.createXReport()));
+        return responseJsonToClass(response, Report.class);
+    }
+
+    public Report getReport(String reportId) throws Exception {
+        Response response = validateResponse(sendRequest(routes.getReport(reportId)));
+        return responseJsonToClass(response, Report.class);
+    }
+
+    public Report getReportText(String reportId) throws Exception {
+        Response response = validateResponse(sendRequest(routes.getReportText(reportId)));
+        return responseJsonToClass(response, Report.class);
+    }
+    public String getReportText(String reportId, int width) throws Exception {
+        Response response = validateResponse(sendRequest(routes.getReportText(reportId, width)));
         return response.body().string();
     }
 
@@ -170,6 +189,14 @@ public class CheckboxAPI {
         Request request = new Request(route);
         request.setHeaders(headers);
         request.setRequestBody(body);
-        return  request.send();
+        return request.send();
+    }
+
+    protected Response sendRequest(Route route) throws Exception {
+        return this.sendRequest(route, null);
+    }
+
+    protected <T> T responseJsonToClass(Response response, Class<T> toObject) throws Exception {
+        return (new Gson().fromJson(response.body().string(),toObject));
     }
 }

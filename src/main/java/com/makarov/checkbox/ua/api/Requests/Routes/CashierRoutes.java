@@ -2,12 +2,12 @@ package com.makarov.checkbox.ua.api.Requests.Routes;
 
 import com.makarov.checkbox.ua.api.Requests.Methods;
 
-public class Cashier {
+public class CashierRoutes {
     String apiUrl;
     String route = "cashier";
     String fullRoute;
 
-    public Cashier(String apiUrlWithVersion) {
+    public CashierRoutes(String apiUrlWithVersion) {
         this.apiUrl = apiUrlWithVersion;
         fullRoute = this.apiUrl + route;
     }
@@ -22,6 +22,10 @@ public class Cashier {
 
     public Route getProfile() {
         return new Route(fullRoute + "/me");
+    }
+
+    public Route getCashierShift() {
+        return new Route(fullRoute + "/shift");
     }
 }
 

@@ -1,10 +1,11 @@
 package com.makarov.checkbox.ua.api.Models.Receipt;
 
+import com.makarov.checkbox.ua.api.Models.Payment.Payment;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class Receipt {
+public class SellReceipt {
     ArrayList<Good> goods;
     ArrayList<Payment> payments;
 
@@ -22,7 +23,7 @@ public class Receipt {
     String fiscal_code = null;
     ReceiptStatus status = null;
 
-    private Receipt(ArrayList<Good> goods, ArrayList<Payment> payments) {
+    private SellReceipt(ArrayList<Good> goods, ArrayList<Payment> payments) {
         this.goods = goods;
         this.payments = payments;
     }
@@ -36,10 +37,10 @@ public class Receipt {
     }
 
     public static class Builder {
-        private Receipt receipt;
+        private SellReceipt receipt;
 
         public Builder(@NotNull ArrayList<Good> goods, @NotNull ArrayList<Payment> payments) {
-            receipt = new Receipt(goods, payments);
+            receipt = new SellReceipt(goods, payments);
         }
 
         public Builder setId(String id) {
@@ -97,7 +98,7 @@ public class Receipt {
             return this;
         }
 
-        public Receipt build() {
+        public SellReceipt build() {
             return receipt;
         }
     }

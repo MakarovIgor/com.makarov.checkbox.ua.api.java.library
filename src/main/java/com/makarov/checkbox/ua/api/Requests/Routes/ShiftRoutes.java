@@ -2,12 +2,12 @@ package com.makarov.checkbox.ua.api.Requests.Routes;
 
 import com.makarov.checkbox.ua.api.Requests.Methods;
 
-public class Shift {
+public class ShiftRoutes {
     String route = "shifts";
     String apiUrl;
     String fullRoute;
 
-    public Shift(String apiUrlWithVersion) {
+    public ShiftRoutes(String apiUrlWithVersion) {
         this.apiUrl = apiUrlWithVersion;
         fullRoute = this.apiUrl + route;
     }

@@ -3,12 +3,12 @@ package com.makarov.checkbox.ua.api.Requests.Routes;
 import com.makarov.checkbox.ua.api.Models.PngWidths;
 import com.makarov.checkbox.ua.api.Requests.Methods;
 
-public class Receipt {
+public class ReceiptRoutes {
     String apiUrl;
     String route = "receipts";
     String fullRoute;
 
-    public Receipt(String apiUrlWithVersion) {
+    public ReceiptRoutes(String apiUrlWithVersion) {
         this.apiUrl = apiUrlWithVersion;
         fullRoute = this.apiUrl + route + "/";
     }
@@ -33,7 +33,8 @@ public class Receipt {
         return new Route(fullRoute + receiptId + "/html?simple=" + isSimple);
     }
 
-    public Route getReceiptText(String receiptId, int width) {
+    public Route getReceiptText(String receiptId, int widthInCharacters) {
+        int width = (widthInCharacters > 250) ? 250 : Math.max(widthInCharacters, 10);
         return new Route(fullRoute + receiptId + "/text?width=" + width);
     }
 

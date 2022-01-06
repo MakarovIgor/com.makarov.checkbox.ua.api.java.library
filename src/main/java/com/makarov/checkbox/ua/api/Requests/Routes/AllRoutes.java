@@ -11,65 +11,85 @@ public class AllRoutes {
     }
 
     public Route cashierSignIn() {
-        return new Cashier(this.apiUrl).signIn();
+        return new CashierRoutes(apiUrl).signIn();
     }
 
     public Route cashierSignOut() {
-        return new Cashier(this.apiUrl).signOut();
+        return new CashierRoutes(apiUrl).signOut();
     }
 
     public Route cashierProfile() {
-        return new Cashier(this.apiUrl).getProfile();
+        return new CashierRoutes(apiUrl).getProfile();
     }
 
+    public Route getCashierActiveShift() {
+        return new CashierRoutes(apiUrl).getCashierShift();
+    }
     public Route openShift() {
-        return new Shift(this.apiUrl).open();
+        return new ShiftRoutes(apiUrl).open();
     }
 
     public Route closeShift() {
-        return new Shift(this.apiUrl).close();
+        return new ShiftRoutes(apiUrl).close();
     }
 
     public Route sellReceipt() {
-        return new Receipt(apiUrl).sell();
+        return new ReceiptRoutes(apiUrl).sell();
     }
 
     public Route getReceipt(String receiptId) {
-        return new Receipt(apiUrl).getReceipt(receiptId);
+        return new ReceiptRoutes(apiUrl).getReceipt(receiptId);
     }
 
     public Route getReceiptPdf(String receiptId) {
-        return new Receipt(apiUrl).getReceiptPdf(receiptId);
+        return new ReceiptRoutes(apiUrl).getReceiptPdf(receiptId);
     }
 
     public Route getReceiptQrCode(String receiptId) {
-        return new Receipt(apiUrl).getReceiptQrCode(receiptId);
+        return new ReceiptRoutes(apiUrl).getReceiptQrCode(receiptId);
     }
 
     public Route getReceiptHtml(String receiptId, boolean isSimple) {
-        return new Receipt(apiUrl).getReceiptHtml(receiptId, isSimple);
+        return new ReceiptRoutes(apiUrl).getReceiptHtml(receiptId, isSimple);
     }
 
     public Route getReceiptText(String receiptId, int width) {
-        return new Receipt(apiUrl).getReceiptText(receiptId, width);
+        return new ReceiptRoutes(apiUrl).getReceiptText(receiptId, width);
     }
 
     public Route getReceiptPng(String receiptId, PngWidths widths) {
-        return new Receipt(apiUrl).getReceiptPng(receiptId, widths);
+        return new ReceiptRoutes(apiUrl).getReceiptPng(receiptId, widths);
     }
 
     public Route sendReceiptToEmail(String receiptId) {
-        return new Receipt(apiUrl).sendReceiptToEmail(receiptId);
+        return new ReceiptRoutes(apiUrl).sendReceiptToEmail(receiptId);
     }
 
     public Route createServiceReceipt() {
-        return new Receipt(apiUrl).service();
+        return new ReceiptRoutes(apiUrl).service();
     }
+
     public Route getAllTaxes() {
         return new Route(apiUrl + "tax");
     }
 
     public Route pingTaxService() {
-        return new CashRegisters(apiUrl).pingTaxService();
+        return new CashRegistersRoutes(apiUrl).pingTaxService();
+    }
+
+    public Route createXReport() {
+        return new ReportRoutes(apiUrl).createXReport();
+    }
+
+    public Route getReport(String reportId) {
+        return new ReportRoutes(apiUrl).getReport(reportId);
+    }
+
+    public Route getReportText(String reportId) {
+        return new ReportRoutes(apiUrl).getReportText(reportId);
+    }
+
+    public Route getReportText(String reportId, int width) {
+        return new ReportRoutes(apiUrl).getReportText(reportId, width);
     }
 }

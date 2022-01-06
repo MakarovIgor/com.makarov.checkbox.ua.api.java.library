@@ -1,11 +1,11 @@
-package com.makarov.checkbox.ua.api.Models.Receipt;
+package com.makarov.checkbox.ua.api.Models.Tax;
 
-public class Tax {
+public class AbstractTax {
     int code;
     String label;
     char symbol;
 
-    public Tax(int code, String label, char symbol) {
+    public AbstractTax(int code, String label, char symbol) {
         this.code = code;
         this.label = label;
         this.symbol = symbol;

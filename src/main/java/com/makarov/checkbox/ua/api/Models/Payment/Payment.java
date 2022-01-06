@@ -1,4 +1,4 @@
-package com.makarov.checkbox.ua.api.Models.Receipt;
+package com.makarov.checkbox.ua.api.Models.Payment;
 
 public class Payment {
     PaymentType type;
