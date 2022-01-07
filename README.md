@@ -17,6 +17,7 @@
 <https://docs.google.com/document/d/1Zhkc4OljKjea_235YafVvZunkWSp6TCAKeckhgl8t2w/edit>
 
  #### Підключення до проєкту Maven
+Додаємо залежність в <dependencies></dependencies>
 ```xml
 <dependency>
   <groupId>com.makarov.checkbox.ua.api</groupId>
@@ -41,7 +42,123 @@ Config config = new Config([
 ]);
 ```
 
-#### Логин кассира:
+#### Вхід користувача (касира):
+Для початку роботи з касою треба залогінити касира
 
+ ```java
+CheckboxAPI api = new CheckboxAPI(config)
+api.cashierSignIn();
+ ```
 
+#### Логаут касира:
+
+ ```java
+api.cashierSignOut();
+ ```
+
+##### Виняткові ситуаціЇ (Exceptions):
+```java
+InvalidCredentialsException - не вірні дані логіну або паролю
+```
+```java
+ValidationException - помилка валідаціЇ 
+```
+```java
+NotActiveShiftException - зміна не активна
+```
+```java
+\Exception  - стандартна помилка
+```
+
+### Основні методи(Basic methods):
+
+#### Касир
+
+##### Вхід користувача (касира) за допомогою логіна та паролю:
+
+ ```java
+CheckboxAPI api = new CheckboxAPI(config)
+api.cashierSignIn();
+ ```
+
+##### Вихід користувача (касира):
+
+ ```java
+api.cashierSignOut();
+ ```
  
+##### Отримання інформації про поточного користувача (касира):
+
+ ```java
+Cashier cashier = api.getCashierProfile(); 
+ ```
+
+##### Отримання інформації про активну зміну користувача (касира):
+
+ ```java
+Shift activeShift = api.getCashierActiveShift();
+ ```
+
+
+#### пРРО
+##### Перевірка зв'язку з ДПС. При наявності зв'язку повертає статус DONE:
+
+ ```java
+api.pingTaxService();
+ ```
+
+#### Зміни
+##### Отримання змін поточного касира:
+
+```java
+ArrayList<Shift> shifts = api.getShifts();
+ ```
+ 
+##### Відкриття нової зміни касиром:
+
+```java
+api.openShift();
+ ```
+
+##### Отримання інформації про зміну:
+
+```java
+Shift shift = api.getShift(String shiftId);
+```
+
+##### Створення Z-Звіту та закриття поточної зміни користувачем:
+
+```java
+api.closeShift();
+```
+
+#### Чеки
+##### Отримання інформації про чек:
+
+```java
+SellReceipt sellReceipt = api.getReceipt(String receiptId);
+```
+
+##### Створення чеку продажу/повернення:
+
+```java
+SellReceipt receipt = new SellReceipt.Builder(
+
+).build();
+
+api.receiptSell(receipt);
+```
+
+##### Створення сервісного чеку внесення або винесення коштів:
+внесення:
+```java
+ServiceReceipt serviceReceipt = checkboxAPI.createServiceReceipt(
+      new ServiceReceipt(new Payment(PaymentType.CASH, 100))
+);
+```
+винесення - просто сума оплати з мінусовім значенням:
+```
+ServiceReceipt serviceReceipt = checkboxAPI.createServiceReceipt(
+      new ServiceReceipt(new Payment(PaymentType.CASH, -100))
+);
+```
