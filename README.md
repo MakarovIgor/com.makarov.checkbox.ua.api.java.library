@@ -157,7 +157,7 @@ ServiceReceipt serviceReceipt = checkboxAPI.createServiceReceipt(
 );
 ```
 винесення - просто сума оплати з мінусовім значенням:
-```
+```java
 ServiceReceipt serviceReceipt = checkboxAPI.createServiceReceipt(
       new ServiceReceipt(new Payment(PaymentType.CASH, -100))
 );
