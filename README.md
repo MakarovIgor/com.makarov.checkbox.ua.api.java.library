@@ -67,7 +67,7 @@ ValidationException - помилка валідаціЇ
 NotActiveShiftException - зміна не активна
 ```
 ```java
-\Exception  - стандартна помилка
+Exception - стандартна помилка
 ```
 
 ### Основні методи(Basic methods):
