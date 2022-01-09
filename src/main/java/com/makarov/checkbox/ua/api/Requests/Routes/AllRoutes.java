@@ -6,7 +6,7 @@ public class AllRoutes {
     String apiUrl;
 
     public AllRoutes(String apiUrl) {
-        this.apiUrl = apiUrl;
+        this.apiUrl = apiUrl + "/";
     }
 
     public Route cashierSignIn() {
