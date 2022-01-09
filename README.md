@@ -1,5 +1,6 @@
 # com.makarov.checkbox.ua.api.java.library
-### JAVA SDK для работи з Checkbox.ua API
+### JAVA SDK для работи з Checkbox RESTful API (Украина)
+<b>Checkbox</b> – сервіс програмної реєстрації розрахункових операцій.
 
 #### Примечание:
 
