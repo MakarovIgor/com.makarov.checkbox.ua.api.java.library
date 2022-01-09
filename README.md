@@ -170,14 +170,15 @@ String receiptHtml = api.getReceiptHtml(String receiptId, boolean isSimple);
 ```
 
 ##### Отримання PDF представлення чеку
-
 ```java
 byte[] receiptPdf = api.getReceiptPdf(String receiptId);
 ```
 >А потім ці байти можна записати в файл, наприклад ось так:
+```java
 File file = new File("/home/" + receipt.getId() + ".png");
 FileOutputStream outputStream = new FileOutputStream(file);
 outputStream.write(png);
+```
 
 ###### Це стосується усіх методів які повертають масив байтів byte[]
 
@@ -194,7 +195,6 @@ byte[] pngBytes = api.getReceiptPng(String receiptId, PngWidths widths);
 ```
 
 ###### також можна ці байти перевести в base64 і розмістити десь в html:
-
 ```java
  String encodedString = Base64.getEncoder().encodeToString(pngBytes);
  ```
