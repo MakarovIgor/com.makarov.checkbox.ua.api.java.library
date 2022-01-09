@@ -6,7 +6,7 @@
 
     <groupId>com.makarov.checkbox.ua.api</groupId>
     <artifactId>checkbox-ppo</artifactId>
-    <version>0.1</version>
+    <version>1.0</version>
 
     <properties>
         <java.version>17</java.version>
