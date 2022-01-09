@@ -4,10 +4,9 @@ import com.makarov.checkbox.ua.api.Models.PngWidths;
 
 public class AllRoutes {
     String apiUrl;
-    String apiVersion = "v1";
 
     public AllRoutes(String apiUrl) {
-        this.apiUrl = apiUrl + "/api/" + apiVersion + "/";
+        this.apiUrl = apiUrl;
     }
 
     public Route cashierSignIn() {
