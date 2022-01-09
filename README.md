@@ -220,3 +220,22 @@ ArrayList<Tax> taxes = api.getAllTaxes(String receiptId);
 ```java
 ArrayList<Tax> taxes = api.getAllTaxes(String receiptId);
 ```
+
+#### Звіти
+##### Генерація X звіту:
+```java
+Report report = api.createXReport();
+```
+##### Отримання звіту в текстовому вигляді:
+```java
+String textReport = api.getReportText(String receiptId);
+```
+> width - Ширина області друку в символах
+```java
+String textReport = api.getReportText(String receiptId, int width);
+```
+
+##### Отримання звіту
+```java
+Report report = api.getReport(String reportId);
+```
