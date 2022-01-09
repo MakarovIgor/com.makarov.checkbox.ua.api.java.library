@@ -162,3 +162,61 @@ ServiceReceipt serviceReceipt = checkboxAPI.createServiceReceipt(
       new ServiceReceipt(new Payment(PaymentType.CASH, -100))
 );
 ```
+
+##### Отримання HTML представлення чеку:
+> boolean isSimple - простий чек(без стилів) чи різнокольровий
+```java
+String receiptHtml = api.getReceiptHtml(String receiptId, boolean isSimple);
+```
+
+##### Отримання PDF представлення чеку
+
+```java
+byte[] receiptPdf = api.getReceiptPdf(String receiptId);
+```
+>А потім ці байти можна записати в файл, наприклад ось так:
+File file = new File("/home/" + receipt.getId() + ".png");
+FileOutputStream outputStream = new FileOutputStream(file);
+outputStream.write(png);
+
+###### Це стосується усіх методів які повертають масив байтів byte[]
+
+##### Отримання текстового представлення чека для термопринтеру
+>int width - Ширина області друку в символах
+```java
+String receiptText = getReceiptText(String receiptId, int width);
+```
+
+##### Отримання графічного представлення чека для термопринтеру
+>PngWidths widths - Ширина області друку в символах
+```java
+byte[] pngBytes = api.getReceiptPng(String receiptId, PngWidths widths);
+```
+
+###### також можна ці байти перевести в base64 і розмістити десь в html:
+
+```java
+ String encodedString = Base64.getEncoder().encodeToString(pngBytes);
+ ```
+###### aбо десь записати як у прикладі с отриманням pdf
+
+
+##### Отримання зображення QR-коду чеку:
+```java
+byte[] qrCode = api.getReceiptQrCode(String receiptId);
+```
+
+##### Відправка чеку на email:
+```java
+api.sendReceiptToEmail(String receiptId);
+```
+
+##### Отримання налаштувань податків:
+```java
+ArrayList<Tax> taxes = api.getAllTaxes(String receiptId);
+```
+
+##### Отримання налаштувань податків:
+```java
+ArrayList<Tax> taxes = api.getAllTaxes(String receiptId);
+```
