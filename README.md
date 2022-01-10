@@ -217,11 +217,6 @@ api.sendReceiptToEmail(String receiptId);
 ArrayList<Tax> taxes = api.getAllTaxes(String receiptId);
 ```
 
-##### Отримання налаштувань податків:
-```java
-ArrayList<Tax> taxes = api.getAllTaxes(String receiptId);
-```
-
 #### Звіти
 ##### Генерація X звіту:
 ```java
