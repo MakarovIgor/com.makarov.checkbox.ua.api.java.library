@@ -31,6 +31,7 @@ com/makarov/checkbox/ua/api/Models/Shift.class
 com/makarov/checkbox/ua/api/Models/Receipt/ServiceReceipt.class
 com/makarov/checkbox/ua/api/Models/Payment/Payment.class
 com/makarov/checkbox/ua/api/Models/Payment/PaymentType.class
+com/makarov/checkbox/ua/api/Models/Receipt/Good$Builder.class
 com/makarov/checkbox/ua/api/Requests/Routes/CashierRoutes.class
 com/makarov/checkbox/ua/api/Requests/Request$1.class
 com/makarov/checkbox/ua/api/Models/Receipt/Good.class

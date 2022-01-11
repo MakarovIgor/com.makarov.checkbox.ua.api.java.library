@@ -13,18 +13,55 @@ public class Good {
     boolean is_return = false;
     ArrayList<Discount> discounts = new ArrayList<>();
 
-    public Good(String name, String code, int price, int quantity, ArrayList<Tax> taxes, boolean isReturn) {
+    private Good(String name, String code, int price, int quantity, ArrayList<Tax> taxes) {
         good.put("code", code);
         good.put("name", name);
-        good.put("uktzed", null);
         good.put("price", price);
-        good.put("barcode", "");
-        good.put("footer", "");
-        good.put("header", "");
         good.put("tax", prepareTaxes(taxes));
 
-        this.is_return = isReturn;
         this.quantity = quantity;
+    }
+
+    public static class Builder {
+        private Good good;
+
+        public Builder(String name, String code, int price, int quantity, ArrayList<Tax> taxes) {
+            good = new Good(name, code, price, quantity, taxes);
+        }
+
+        public Builder setDiscount(Discount discount) {
+            good.discounts.add(discount);
+            return this;
+        }
+
+        public Builder isReturn() {
+            good.is_return = true;
+            return this;
+        }
+
+        public Builder setUktzed(String uktzed) {
+            good.good.put("uktzed", uktzed);
+            return this;
+        }
+
+        public Builder setHeader(String header) {
+            good.good.put("header", header);
+            return this;
+        }
+
+        public Builder setFooter(String footer) {
+            good.good.put("footer", footer);
+            return this;
+        }
+
+        public Builder setBarcode(String barcode) {
+            good.good.put("barcode", barcode);
+            return this;
+        }
+
+        public Good build() {
+            return good;
+        }
     }
 
     private ArrayList<Integer> prepareTaxes(ArrayList<Tax> taxes) {

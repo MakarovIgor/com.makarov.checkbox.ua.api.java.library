@@ -6,10 +6,9 @@ public class Discount {
     int value;
     int sum;
 
-    public Discount(DiscountType type, DiscountMode mode, int value, int resulSum) {
+    public Discount(DiscountType type, DiscountMode mode, int value) {
         this.type = type;
         this.mode = mode;
         this.value = value;
-        this.sum = resulSum;
     }
 }
