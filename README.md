@@ -142,36 +142,100 @@ SellReceipt sellReceipt = api.getReceipt(String receiptId);
 
 ##### Створення чеку продажу/повернення:
 
+###### створення простого чеку
 ```java
 SellReceipt receipt = new SellReceipt.Builder(
-    new ArrayList<>(
-            List.of(
-                    new Good(
-                            "test name",
-                            "test code",
-                            405 * 100,
-                            2 * 1000,
-                            new ArrayList<>(
-                                    List.of(
-                                            new Tax(1, "ПДВ", 'А')
-                                    )
-                            ),
-                            isReturn
-                    )
-            )
-    ),
-    new ArrayList<>(
-            List.of(
-                    new Payment(
-                            PaymentType.CASH,
-                            405 * 100
-                    )
-            )
-    )
+     new ArrayList<>(
+             List.of(
+                     new Good(
+                             "test name",
+                             "test code",
+                             4*100, //ціна товару за одиницю 4грн
+                             1*1000, //кількість 1
+                             new ArrayList<>(
+                                     List.of(
+                                             new Tax(1, "ПДВ", 'А')
+                                     )
+                             ),
+                             isReturn
+                     ),
+                     new Good(
+                             "test name 2",
+                             "test code 2",
+                             2*100, //ціна товару за одиницю 2грн
+                             2*1000, //кількість 2
+                             new ArrayList<>(
+                                     List.of(
+                                             new Tax(1, "ПДВ", 'А')
+                                     )
+                             ),
+                             isReturn
+                     )
+             )
+     ),
+     new ArrayList<>(
+             List.of(
+                     new Payment(
+                             PaymentType.CASH,
+                             8*100 // оплачено готівкою 8 грн
+                     )
+             )
+     )
 ).build();
 
 api.receiptSell(receipt);
 ```
+
+###### створення чеку із додатковими даними, та відправкою на Email
+```java
+SellReceipt receipt = new SellReceipt.Builder(
+     new ArrayList<>(
+             List.of(
+                     new Good(
+                             "test name",
+                             "test code",
+                             4*100, //ціна товару за одиницю 4грн
+                             1*1000, //кількість 1
+                             new ArrayList<>(
+                                     List.of(
+                                             new Tax(1, "ПДВ", 'А')
+                                     )
+                             ),
+                             isReturn
+                     ),
+                     new Good(
+                             "test name 2",
+                             "test code 2",
+                             2*100, //ціна товару за одиницю 2грн
+                             2*1000, //кількість 2
+                             new ArrayList<>(
+                                     List.of(
+                                             new Tax(1, "ПДВ", 'А')
+                                     )
+                             ),
+                             isReturn
+                     )
+             )
+     ),
+     new ArrayList<>(
+             List.of(
+                     new Payment(
+                             PaymentType.CASH,
+                             8*100 // оплачено готівкою 8 грн
+                     )
+             )
+     )
+)
+.setDelivery(new Delivery("igormakarov1991@gmail.com"))
+.setHeader("Магазин ТРАЛЯЛЯ")
+.setFooter("Веселих свят :)")
+.setDepartment("Касса 2")
+.setBarcode("1231286412")
+.build();
+
+api.receiptSell(receipt);
+```
+
 
 ##### Створення сервісного чеку внесення або винесення коштів:
 внесення:
