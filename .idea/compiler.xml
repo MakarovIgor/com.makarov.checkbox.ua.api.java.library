@@ -6,6 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="com.makarov.checkbox.ua.api.java" />
         <module name="com.makarov.checkbox_ua_api" />
         <module name="com.makarov.checkbox.ua.api.java.library" />
       </profile>
