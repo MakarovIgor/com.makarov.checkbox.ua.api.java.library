@@ -1,5 +1,6 @@
 # com.makarov.checkbox.ua.api.java.library
-### JAVA SDK для работи з Checkbox.ua API
+### JAVA SDK для работи з Checkbox RESTful API (Украина)
+<b>Checkbox</b> – сервіс програмної реєстрації розрахункових операцій.
 
 #### Примечание:
 
@@ -67,7 +68,7 @@ ValidationException - помилка валідаціЇ
 NotActiveShiftException - зміна не активна
 ```
 ```java
-\Exception  - стандартна помилка
+Exception - стандартна помилка
 ```
 
 ### Основні методи(Basic methods):
@@ -141,13 +142,108 @@ SellReceipt sellReceipt = api.getReceipt(String receiptId);
 
 ##### Створення чеку продажу/повернення:
 
+###### створення простого чеку
 ```java
 SellReceipt receipt = new SellReceipt.Builder(
-
+     new ArrayList<>(
+             List.of(
+                     new Good.Builder(
+                             "test name",
+                             "test code",
+                             4*100, //ціна товару за одиницю 4грн
+                             1*1000, //кількість 1
+                             new ArrayList<>(
+                                     List.of(
+                                             new Tax(1, "ПДВ", 'А')
+                                     )
+                             )
+                     ).build(),
+                     new Good.Builder(
+                             "test name 2",
+                             "test code 2",
+                             2*100, //ціна товару за одиницю 2грн
+                             2*1000, //кількість 2
+                             new ArrayList<>(
+                                     List.of(
+                                             new Tax(1, "ПДВ", 'А')
+                                     )
+                             )
+                     ).build()
+             )
+     ),
+     new ArrayList<>(
+             List.of(
+                     new Payment(
+                             PaymentType.CASH,
+                             8*100 // оплачено готівкою 8 грн
+                     )
+             )
+     )
 ).build();
 
 api.receiptSell(receipt);
 ```
+
+###### створення чеку із додатковими даними, та відправкою на Email
+```java
+SellReceipt receipt = new SellReceipt.Builder(
+    new ArrayList<>(
+            List.of(
+                    new Good.Builder(
+                            "test name",
+                            "test code",
+                            4 * 100, //ціна товару за одиницю 4грн
+                            1 * 1000, //кількість 1
+                            new ArrayList<>(
+                                    List.of(
+                                            new Tax(1, "ПДВ", 'А')
+                                    )
+                            )
+                    ).setDiscount(
+                        new Discount(
+                                DiscountType.DISCOUNT,
+                                DiscountMode.VALUE,
+                                1 * 100 // знижка 1 грн.
+                        )
+                    ).build(),
+                    new Good.Builder(
+                            "test name 2",
+                            "test code 2",
+                            2 * 100, //ціна товару за одиницю 2грн
+                            2 * 1000, //кількість 2
+                            new ArrayList<>(
+                                    List.of(
+                                            new Tax(1, "ПДВ", 'А')
+                                    )
+                            )
+                    ).setDiscount(
+                        new Discount(
+                                DiscountType.DISCOUNT,
+                                DiscountMode.PERCENT,
+                                10 // знижка 10%.
+                        )
+                    ).build()
+            )
+    ),
+    new ArrayList<>(
+            List.of(
+                    new Payment(
+                            PaymentType.CASH,
+                            660 // оплата  6.60 грн (сумма товарів з урахуванням знижки/надбавки)
+                    )
+            )
+    )
+)
+.setDelivery(new Delivery("igormakarov1991@gmail.com"))
+.setHeader("Магазин ТРАЛЯЛЯ")
+.setFooter("Веселих свят :)")
+.setDepartment("Касса 2")
+.setBarcode("1231286412")
+.build();
+
+api.receiptSell(receipt);
+```
+
 
 ##### Створення сервісного чеку внесення або винесення коштів:
 внесення:
@@ -216,7 +312,21 @@ api.sendReceiptToEmail(String receiptId);
 ArrayList<Tax> taxes = api.getAllTaxes(String receiptId);
 ```
 
-##### Отримання налаштувань податків:
+#### Звіти
+##### Генерація X звіту:
 ```java
-ArrayList<Tax> taxes = api.getAllTaxes(String receiptId);
+Report report = api.createXReport();
+```
+##### Отримання звіту в текстовому вигляді:
+```java
+String textReport = api.getReportText(String receiptId);
+```
+> width - Ширина області друку в символах
+```java
+String textReport = api.getReportText(String receiptId, int width);
+```
+
+##### Отримання звіту
+```java
+Report report = api.getReport(String reportId);
 ```
