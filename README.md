@@ -187,42 +187,52 @@ api.receiptSell(receipt);
 ###### створення чеку із додатковими даними, та відправкою на Email
 ```java
 SellReceipt receipt = new SellReceipt.Builder(
-     new ArrayList<>(
-             List.of(
-                     new Good(
-                             "test name",
-                             "test code",
-                             4*100, //ціна товару за одиницю 4грн
-                             1*1000, //кількість 1
-                             new ArrayList<>(
-                                     List.of(
-                                             new Tax(1, "ПДВ", 'А')
-                                     )
-                             ),
-                             isReturn
-                     ),
-                     new Good(
-                             "test name 2",
-                             "test code 2",
-                             2*100, //ціна товару за одиницю 2грн
-                             2*1000, //кількість 2
-                             new ArrayList<>(
-                                     List.of(
-                                             new Tax(1, "ПДВ", 'А')
-                                     )
-                             ),
-                             isReturn
-                     )
-             )
-     ),
-     new ArrayList<>(
-             List.of(
-                     new Payment(
-                             PaymentType.CASH,
-                             8*100 // оплачено готівкою 8 грн
-                     )
-             )
-     )
+    new ArrayList<>(
+            List.of(
+                    new Good.Builder(
+                            "test name",
+                            "test code",
+                            4 * 100, //ціна товару за одиницю 4грн
+                            1 * 1000, //кількість 1
+                            new ArrayList<>(
+                                    List.of(
+                                            new Tax(1, "ПДВ", 'А')
+                                    )
+                            )
+                    ).setDiscount(
+                        new Discount(
+                                DiscountType.DISCOUNT,
+                                DiscountMode.VALUE,
+                                1 * 100 // знижка 1 грн.
+                        )
+                    ).build(),
+                    new Good.Builder(
+                            "test name 2",
+                            "test code 2",
+                            2 * 100, //ціна товару за одиницю 2грн
+                            2 * 1000, //кількість 2
+                            new ArrayList<>(
+                                    List.of(
+                                            new Tax(1, "ПДВ", 'А')
+                                    )
+                            )
+                    ).setDiscount(
+                        new Discount(
+                                DiscountType.DISCOUNT,
+                                DiscountMode.PERCENT,
+                                10 // знижка 10%.
+                        )
+                    ).build()
+            )
+    ),
+    new ArrayList<>(
+            List.of(
+                    new Payment(
+                            PaymentType.CASH,
+                            660 // оплата  6.60 грн (сумма товарів з урахуванням знижки/надбавки)
+                    )
+            )
+    )
 )
 .setDelivery(new Delivery("igormakarov1991@gmail.com"))
 .setHeader("Магазин ТРАЛЯЛЯ")
