@@ -147,7 +147,7 @@ SellReceipt sellReceipt = api.getReceipt(String receiptId);
 SellReceipt receipt = new SellReceipt.Builder(
      new ArrayList<>(
              List.of(
-                     new Good(
+                     new Good.Builder(
                              "test name",
                              "test code",
                              4*100, //ціна товару за одиницю 4грн
@@ -156,10 +156,9 @@ SellReceipt receipt = new SellReceipt.Builder(
                                      List.of(
                                              new Tax(1, "ПДВ", 'А')
                                      )
-                             ),
-                             isReturn
-                     ),
-                     new Good(
+                             )
+                     ).build(),
+                     new Good.Builder(
                              "test name 2",
                              "test code 2",
                              2*100, //ціна товару за одиницю 2грн
@@ -168,9 +167,8 @@ SellReceipt receipt = new SellReceipt.Builder(
                                      List.of(
                                              new Tax(1, "ПДВ", 'А')
                                      )
-                             ),
-                             isReturn
-                     )
+                             )
+                     ).build()
              )
      ),
      new ArrayList<>(
