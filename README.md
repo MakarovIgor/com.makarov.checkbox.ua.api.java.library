@@ -144,7 +144,30 @@ SellReceipt sellReceipt = api.getReceipt(String receiptId);
 
 ```java
 SellReceipt receipt = new SellReceipt.Builder(
-
+    new ArrayList<>(
+            List.of(
+                    new Good(
+                            "test name",
+                            "test code",
+                            405 * 100,
+                            2 * 1000,
+                            new ArrayList<>(
+                                    List.of(
+                                            new Tax(1, "ПДВ", 'А')
+                                    )
+                            ),
+                            isReturn
+                    )
+            )
+    ),
+    new ArrayList<>(
+            List.of(
+                    new Payment(
+                            PaymentType.CASH,
+                            405 * 100
+                    )
+            )
+    )
 ).build();
 
 api.receiptSell(receipt);
