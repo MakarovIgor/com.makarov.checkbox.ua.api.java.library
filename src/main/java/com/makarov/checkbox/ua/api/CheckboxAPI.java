@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class CheckboxAPI {
     Config config;
-    Map<String, String> headers;
+    protected Map<String, String> headers;
     AllRoutes routes;
 
     public CheckboxAPI(Config config) throws Exception {
