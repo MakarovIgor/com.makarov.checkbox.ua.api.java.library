@@ -9,7 +9,7 @@ public class ReportRoutes {
 
     public ReportRoutes(String apiUrlWithVersion) {
         this.apiUrl = apiUrlWithVersion;
-        fullRoute = this.apiUrl + route + "/";
+        fullRoute = this.apiUrl + route;
     }
 
     public Route createXReport() {
@@ -21,12 +21,12 @@ public class ReportRoutes {
     }
 
     public Route getReportText(String reportId) {
-        return new Route(fullRoute + reportId + "/text");
+        return new Route(fullRoute  + "/" + reportId + "/text");
     }
 
     public Route getReportText(String reportId, int widthInCharacters) {
         int width = (widthInCharacters > 250) ? 250 : Math.max(widthInCharacters, 10);
-        return new Route(fullRoute + reportId + "/text?width" + width);
+        return new Route(fullRoute  + "/" + reportId + "/text?width" + width);
     }
 
 

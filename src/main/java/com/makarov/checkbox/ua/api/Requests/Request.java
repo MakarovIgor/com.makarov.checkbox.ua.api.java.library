@@ -6,7 +6,6 @@ import okio.BufferedSink;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.net.ssl.*;
 import java.util.Map;
 
 public class Request {
@@ -62,7 +61,7 @@ public class Request {
             requestBuilder.post(body);
         }
 
-        if (headers != null && !headers.isEmpty()) {
+        if (headers != null) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
                 requestBuilder.header(entry.getKey(), entry.getValue());
             }
@@ -72,23 +71,8 @@ public class Request {
     }
 
     private OkHttpClient buildOkHttpClient() {
-        OkHttpClient client = null;
-        try {
-            OkHttpClient.Builder builder = new OkHttpClient.Builder();
-
-            if (url.contains("https://")) {
-                TrustManager[] trustAllCerts = getTrustAllCerts();
-                final SSLContext sslContext = SSLContext.getInstance("TLS");
-                sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-
-                final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-                builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
-            }
-            client = builder.build();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return client;
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        return builder.build();
     }
 
     public Response send() throws Exception {
@@ -96,24 +80,5 @@ public class Request {
         OkHttpClient client = this.buildOkHttpClient();
 
         return client.newCall(request).execute();
-    }
-
-    private TrustManager[] getTrustAllCerts() {
-        return new TrustManager[]{
-                new X509TrustManager() {
-                    @Override
-                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-                    }
-
-                    @Override
-                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-                    }
-
-                    @Override
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                        return new java.security.cert.X509Certificate[]{};
-                    }
-                }
-        };
     }
 }

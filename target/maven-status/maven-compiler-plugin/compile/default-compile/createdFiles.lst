@@ -9,7 +9,6 @@ com/makarov/checkbox/ua/api/Exceptions/ValidationException.class
 com/makarov/checkbox/ua/api/Requests/Routes/ReceiptRoutes.class
 com/makarov/checkbox/ua/api/Models/Receipt/ReceiptStatus.class
 com/makarov/checkbox/ua/api/Requests/ResponseValidator.class
-com/makarov/checkbox/ua/api/Requests/Request$2.class
 com/makarov/checkbox/ua/api/Models/Tax/ReportTax.class
 com/makarov/checkbox/ua/api/Models/Discount/DiscountMode.class
 com/makarov/checkbox/ua/api/Requests/Routes/ReportRoutes.class
