@@ -23,7 +23,7 @@
 <dependency>
   <groupId>com.makarov.checkbox.ua.api</groupId>
   <artifactId>checkbox-ppo</artifactId>
-  <version>1.0</version>
+  <version>1.0.3</version>
 </dependency>
 ```
 
