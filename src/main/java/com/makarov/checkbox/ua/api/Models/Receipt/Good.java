@@ -3,6 +3,7 @@ package com.makarov.checkbox.ua.api.Models.Receipt;
 import com.makarov.checkbox.ua.api.Models.Discount.Discount;
 import com.makarov.checkbox.ua.api.Models.Tax.Tax;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,8 +26,8 @@ public class Good {
     public static class Builder {
         private Good good;
 
-        public Builder(String name, String code, int price, int quantity, ArrayList<Tax> taxes) {
-            good = new Good(name, code, price, quantity, taxes);
+        public Builder(String name, String code, BigDecimal price, BigDecimal quantity, ArrayList<Tax> taxes) {
+            good = new Good(name, code, (int) (price.doubleValue() * 100), (int) (quantity.doubleValue() * 1000), taxes);
         }
 
         public Builder setDiscount(Discount discount) {
