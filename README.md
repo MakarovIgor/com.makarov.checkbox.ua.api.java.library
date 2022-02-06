@@ -23,7 +23,7 @@
 <dependency>
   <groupId>com.makarov.checkbox.ua.api</groupId>
   <artifactId>checkbox-ppo</artifactId>
-  <version>1.0.3</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 
@@ -150,8 +150,8 @@ SellReceipt receipt = new SellReceipt.Builder(
                      new Good.Builder(
                              "test name",
                              "test code",
-                             4*100, //ціна товару за одиницю 4грн
-                             1*1000, //кількість 1
+                             new BigDecimal(4), //ціна товару за одиницю 4грн
+                             new BigDecimal(1), //кількість 1
                              new ArrayList<>(
                                      List.of(
                                              new Tax(1, "ПДВ", 'А')
@@ -161,8 +161,8 @@ SellReceipt receipt = new SellReceipt.Builder(
                      new Good.Builder(
                              "test name 2",
                              "test code 2",
-                             2*100, //ціна товару за одиницю 2грн
-                             2*1000, //кількість 2
+                             new BigDecimal(2), //ціна товару за одиницю 2грн
+                             new BigDecimal(2), //кількість 2
                              new ArrayList<>(
                                      List.of(
                                              new Tax(1, "ПДВ", 'А')
@@ -175,7 +175,7 @@ SellReceipt receipt = new SellReceipt.Builder(
              List.of(
                      new Payment(
                              PaymentType.CASH,
-                             8*100 // оплачено готівкою 8 грн
+                             new BigDecimal(8) // оплачено готівкою 8 грн
                      )
              )
      )
@@ -192,8 +192,8 @@ SellReceipt receipt = new SellReceipt.Builder(
                     new Good.Builder(
                             "test name",
                             "test code",
-                            4 * 100, //ціна товару за одиницю 4грн
-                            1 * 1000, //кількість 1
+                            new BigDecimal(4), //ціна товару за одиницю 4грн
+                            new BigDecimal(1), //кількість 1
                             new ArrayList<>(
                                     List.of(
                                             new Tax(1, "ПДВ", 'А')
@@ -209,8 +209,8 @@ SellReceipt receipt = new SellReceipt.Builder(
                     new Good.Builder(
                             "test name 2",
                             "test code 2",
-                            2 * 100, //ціна товару за одиницю 2грн
-                            2 * 1000, //кількість 2
+                            new BigDecimal(2), //ціна товару за одиницю 2грн
+                            new BigDecimal(2), //кількість 2
                             new ArrayList<>(
                                     List.of(
                                             new Tax(1, "ПДВ", 'А')
@@ -229,7 +229,7 @@ SellReceipt receipt = new SellReceipt.Builder(
             List.of(
                     new Payment(
                             PaymentType.CASH,
-                            660 // оплата  6.60 грн (сумма товарів з урахуванням знижки/надбавки)
+                            new BigDecimal(6.60) // оплата  6.60 грн (сумма товарів з урахуванням знижки/надбавки)
                     )
             )
     )
@@ -249,13 +249,13 @@ api.receiptSell(receipt);
 внесення:
 ```java
 ServiceReceipt serviceReceipt = checkboxAPI.createServiceReceipt(
-      new ServiceReceipt(new Payment(PaymentType.CASH, 100))
+      new ServiceReceipt(new Payment(PaymentType.CASH, new BigDecimal(100))
 );
 ```
 винесення - просто сума оплати з мінусовім значенням:
 ```java
 ServiceReceipt serviceReceipt = checkboxAPI.createServiceReceipt(
-      new ServiceReceipt(new Payment(PaymentType.CASH, -100))
+      new ServiceReceipt(new Payment(PaymentType.CASH, new BigDecimal(-100))
 );
 ```
 
